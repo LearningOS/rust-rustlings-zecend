@@ -8,6 +8,11 @@ struct Person {
     name: String,
     age: usize,
 }
+impl Person {
+    fn new(name: String, age: usize) -> Self {
+        Person { name, age }
+    }
+}
 
 // We implement the Default trait to use it as a fallback
 // when the provided string is not convertible into a Person object
@@ -35,10 +40,21 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        match s.split_once(",") {
+            Some((name, age_str)) => {
+                if name.is_empty() {
+                    Person::default()
+                } else if let Ok(age) = age_str.parse::<usize>() {
+                    Person::new(String::from(name), age)
+                } else {
+                    Person::default()
+                }
+            }
+            _ => Person::default(),
+        }
     }
 }
 
